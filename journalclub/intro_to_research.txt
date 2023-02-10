@@ -1,0 +1,39 @@
+Notes from today 
+```# Intro to Research
+
+## Research in Industry vs. Research in Academia
+* research positions seem to be more flexible in terms of job duties/projects, hours, and dresscode
+* much more money in industry
+
+## Publications
+* Venues: Journals, Conferences 
+** Top Conferences: CVPR, ICML, NeurIPS, ICCV, SigKDD, MICCAI ... (general), but there might be more domain-specific venues (IEEE Visualization, ) (accpetance rate ~20%)
+** Top Journals: Nature, Science..
+* Peer Review
+** other researchers judge your work (2-4)
+* pre-prints on ArXiv
+* Publishers get all the money!
+* Overleaf/Latex are the best way of writing papers
+* Impact Factor: how often will the paper be cited on average per year
+* Conference Rank: A*, A, B, C... A is the best conference in the field
+** h5-index: how many papers were cited at least h times in the last 5 years. so for CVPR h-index 188 means 188 papers were cited at least 188 times in the last 5 years
+
+
+## Citations
+* show how impactful your research is
+* h-index: X number of papers cited X times.. h-index 15: I have 15 papers cited at least 15 times
+* Google Scholar: researcher profiles, search engine for scientific research
+* best way: use BibTex (as part of LaTeX/Overleaf) to cite papers and use the google scholar export functionality
+
+## Tenure-track
+* tenured: for life -> associate professor (usually after 6 years)
+* research (mentor students, publish papers, apply for research grants) teaching (give lectures, ) service (department, college, university, research community: paper reviews, organizing conferences)
+Post-doc (after PhD, usually just research), Research Scientist (can become Principal Research Scientist == kind of like tenure, usually mainly research)
+
+
+** Research Grants
+* apply for funding 
+* multiple funding agency: NSF National Science Foundation (they also offer phd fellowships), NIH National Institutes of Health (R01, multi-million dollar research grant for up 5 years)
+* good for the university: charges an overhead, $1 million dollars = 52.5% == real money will be just 500k, actually not the bad at UMB
+* MLSC $750k to work on breast cancer research, no overhead, only for equipment: chimera12/13
+```
