@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <title></title>
+
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+    <script>
+
+      async function main() {
+
+        session = await ort.InferenceSession.create('./mnist.onnx');
+
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
+
+        drawing = false;
+
+        canvas.onmousedown = function(e) {
+
+          drawing = true;
+
+          draw(e.offsetX, e.offsetY);
+
+        };
+
+        canvas.onmousemove = function(e) {
+
+          if (drawing) {
+
+            draw(e.offsetX, e.offsetY);
+          
+          }
+
+        };
+
+
+        canvas.onmouseup = function(e) {
+
+          drawing = false;
+
+          recognize();
+
+        };
+
+      };
+
+
+      
+
+
+      function draw(x, y) {
+
+        ctx.fillRect(x, y, 1, 1);
+
+      };
+
+
+
+      function recognize() {
+
+        img = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        binary = new Float32Array(784);
+
+        for (var i = 0; i < img.length; i += 4) {
+
+          var r = img[i];
+          var g = img[i+1];
+          var b = img[i+2];
+          var a = img[i+3];
+
+          if ( a == 255 ) {
+
+            binary[i / 4] = 1.;
+          
+          }
+        
+        }
+
+
+
+
+        const tensor = new ort.Tensor("float32", binary, [1, 1, 28, 28]);
+
+        input = {};
+        input[session.inputNames[0]] = tensor;
+
+        session.run( input ).then( output => {
+
+          outputData = output[Object.keys(output)[0]].data;
+          
+          digit = outputData.indexOf(Math.max(...outputData));
+
+          console.log('Recognized:', digit);
+
+        }).catch(err => {
+
+          console.error(err);
+
+        });
+
+      };
+
+
+      main();
+
+
+    </script>
+
+  </head>
+  <body>
+
+    <canvas id="canvas" width="28" height="28" style="border:1px solid black;"></canvas>
+
+  </body>
+</html>
