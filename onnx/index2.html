@@ -1,3 +1,4 @@
+<!-- // inspired by https://github.com/kevmo314/magic-copy -->
 <html>
   <head>
     <title></title>
@@ -10,33 +11,72 @@
 
         session = await ort.InferenceSession.create('./sam.onnx');
 
-        output = await recognize()
+        i1 = document.getElementById('i1');
+        url = i1.src;
+        height = i1.height;
+        width = i1.width;
 
-        c_arr = new Uint8ClampedArray(output.data);
-        i = new ImageData(c_arr, 320,395)
+        x1 = 0;
+        y1 = 0;
+        x2 = 140;
+        y2 = 140;
+        mask = await segment(url, x1, y1, x2, y2);
 
+        mask = arrayToImageData(mask.output.data, width, height);
         c1 = document.getElementById('c1');
+        c1.width = width;
+        c1.height = height;
         ctx = c1.getContext('2d');
-
-        ctx.putImageData(i, 0, 0);
+        ctx.putImageData(mask, 0, 0);
 
       };
 
-      async function recognize() {
 
-        // inspired by https://github.com/kevmo314/magic-copy
+      function arrayToImageData(input, width, height) {
+        // From: https://github.com/facebookresearch/segment-anything/blob/40df6e4046d8b07ab8c4519e083408289eb43032/demo/src/components/helpers/maskUtils.tsx
+        // Copyright (c) Meta Platforms, Inc. and affiliates.
+        // All rights reserved.
 
-        scale = 1024 / Math.max(320,395);
+        // This source code is licensed under the license found in the
+        // LICENSE file in the root directory of this source tree.
+        [r, g, b, a] = [0, 114, 189, 255]; // the masks's blue color
+        arr = new Uint8ClampedArray(4 * width * height);
+        for (var i = 0; i < input.length; i++) {
+
+          // Threshold the onnx model mask prediction at 0.0
+          // This is equivalent to thresholding the mask using predictor.model.mask_threshold
+          // in python
+          if (input[i] > 0.0) {
+            arr[4 * i + 0] = r;
+            arr[4 * i + 1] = g;
+            arr[4 * i + 2] = b;
+            arr[4 * i + 3] = a;
+          }
+
+        }
+        
+        return new ImageData(arr, width, height);
+
+      };
+
+      async function segment(url, x1, y1, x2, y2) {
 
         input = {};
-        input['low_res_embedding'] = await get_embedding();
-        input['point_coords'] = new ort.Tensor("float32", new Float32Array([10*scale,10*scale,20*scale,20*scale]), [1, 2, 2]);
+        input['low_res_embedding'] = await get_embedding(url);
+
+        // scaled coordinates
+        scale = 1024 / Math.max(height, width);
+        x1 = x1*scale;
+        y1 = y1*scale;
+        x2 = x2*scale;
+        y2 = y2*scale;
+        input['point_coords'] = new ort.Tensor("float32", new Float32Array([x1,y1,x2,y2]), [1, 2, 2]);
 
         // 2 and 3 mean top-left-bottom-right box
         input['point_labels'] = new ort.Tensor("float32", new Float32Array([2,3]), [1, 2]);
 
         // original image size
-        input['image_size'] = new ort.Tensor("float32", new Float32Array([395,320]));
+        input['image_size'] = new ort.Tensor("float32", new Float32Array([height, width]));
 
         // empty mask
         input['last_pred_mask'] = new ort.Tensor("float32", new Float32Array(256 * 256), [1, 1, 256, 256]);
@@ -44,8 +84,7 @@
  
         return session.run( input ).then( output => {
 
-          // console.log(output);
-          return output.output;
+          return output;
 
         }).catch(err => {
 
@@ -55,29 +94,23 @@
 
       };
 
+      async function get_embedding(url) {
 
-      main();
-
-      async function get_embedding() {
-
-        response = await fetch('cat.png');
+        response = await fetch(url);
         blob = await response.blob();
 
         endpoint = 'https://model-zoo.metademolab.com/predictions/segment_everything_box_model';
 
-        body = blob;
-
-        embedding = await fetch(endpoint, { method: "POST", body}).then((response) => response.json());
-
+        embedding = await fetch(endpoint, { method: "POST", body: blob }).then((response) => response.json());
 
         uint8arr = Uint8Array.from(atob(embedding[0]), (c) => c.charCodeAt(0));
         embedding = new ort.Tensor("float32", new Float32Array(uint8arr.buffer), [1, 256, 64, 64]);
 
-
         return embedding;
 
-      }
+      };
 
+      main();
 
     </script>
 
@@ -85,7 +118,7 @@
   <body>
 
     <img id='i1' src='cat.png'>
-    <canvas id='c1' width=320 height=395>
+    <canvas id='c1'>
 
   </body>
 </html>
