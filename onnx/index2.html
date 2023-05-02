@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <title></title>
+
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+    <script>
+
+      async function main() {
+
+        session = await ort.InferenceSession.create('./sam.onnx');
+
+        output = await recognize()
+
+        c_arr = new Uint8ClampedArray(output.data);
+        i = new ImageData(c_arr, 320,395)
+
+        c1 = document.getElementById('c1');
+        ctx = c1.getContext('2d');
+
+        ctx.putImageData(i, 0, 0);
+
+      };
+
+      async function recognize() {
+
+        // inspired by https://github.com/kevmo314/magic-copy
+
+        scale = 1024 / Math.max(320,395);
+
+        input = {};
+        input['low_res_embedding'] = await get_embedding();
+        input['point_coords'] = new ort.Tensor("float32", new Float32Array([10*scale,10*scale,20*scale,20*scale]), [1, 2, 2]);
+
+        // 2 and 3 mean top-left-bottom-right box
+        input['point_labels'] = new ort.Tensor("float32", new Float32Array([2,3]), [1, 2]);
+
+        // original image size
+        input['image_size'] = new ort.Tensor("float32", new Float32Array([395,320]));
+
+        // empty mask
+        input['last_pred_mask'] = new ort.Tensor("float32", new Float32Array(256 * 256), [1, 1, 256, 256]);
+        input['has_last_pred'] = new ort.Tensor("float32", new Float32Array([0]));
+ 
+        return session.run( input ).then( output => {
+
+          // console.log(output);
+          return output.output;
+
+        }).catch(err => {
+
+          console.error(err);
+
+        });
+
+      };
+
+
+      main();
+
+      async function get_embedding() {
+
+        response = await fetch('cat.png');
+        blob = await response.blob();
+
+        endpoint = 'https://model-zoo.metademolab.com/predictions/segment_everything_box_model';
+
+        body = blob;
+
+        embedding = await fetch(endpoint, { method: "POST", body}).then((response) => response.json());
+
+
+        uint8arr = Uint8Array.from(atob(embedding[0]), (c) => c.charCodeAt(0));
+        embedding = new ort.Tensor("float32", new Float32Array(uint8arr.buffer), [1, 256, 64, 64]);
+
+
+        return embedding;
+
+      }
+
+
+    </script>
+
+  </head>
+  <body>
+
+    <img id='i1' src='cat.png'>
+    <canvas id='c1' width=320 height=395>
+
+  </body>
+</html>
