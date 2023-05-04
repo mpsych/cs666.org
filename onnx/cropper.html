@@ -18,7 +18,7 @@
 
       async function main() {
 
-        session = await ort.InferenceSession.create('./sam2.onnx');
+        session = await ort.InferenceSession.create('./sam.onnx');
 
         image = document.getElementById('i1');
         url = image.src;
@@ -155,7 +155,7 @@
   </head>
   <body>
 
-    <img id='i1' src='umb.jpg'>
+    <img id='i1' src='umb.png'>
     <canvas id='c1'>
 
   </body>
