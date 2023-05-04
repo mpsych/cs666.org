@@ -3,23 +3,58 @@
   <head>
     <title></title>
 
+    <link rel='stylesheet' href='croppr.min.css'>
+
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+    <script src="croppr.min.js"></script>
 
     <script>
 
+      image = null;
+      url = null;
+      width = null;
+      height = null;
+
       async function main() {
 
-        session = await ort.InferenceSession.create('./sam.onnx');
+        session = await ort.InferenceSession.create('./sam2.onnx');
 
-        i1 = document.getElementById('i1');
-        url = i1.src;
-        height = i1.height;
-        width = i1.width;
+        image = document.getElementById('i1');
+        url = image.src;
+        width = image.width;
+        height = image.height;
 
-        x1 = 0;
-        y1 = 0;
-        x2 = 140;
-        y2 = 140;
+        cropbox = new Croppr('#i1', {
+        });
+
+      };
+
+      window.onkeypress = function(e) {
+
+        e.preventDefault();
+
+        if (e.code != 'Space') return;
+
+        setup();
+
+      };
+
+      async function setup() {
+
+        data = cropbox.getValue();
+
+        x1 = data.x;
+        y1 = data.y;
+        x2 = data.x + data.width;
+        y2 = data.y + data.height;
+
+
+        // x1 = 0;
+        // y1 = 0;
+        // x2 = 140;
+        // y2 = 140;
+        // console.log(x1, y1, x2, y2)
         mask = await segment(url, x1, y1, x2, y2);
 
         mask = arrayToImageData(mask.output.data, width, height);
@@ -65,12 +100,17 @@
         input['low_res_embedding'] = await get_embedding(url);
 
         // scaled coordinates
-        scale = 1024 / Math.max(height, width);
+        // scale = 1024 / Math.max(height, width);
+        
+        scale = 1;
         x1 = x1*scale;
         y1 = y1*scale;
         x2 = x2*scale;
         y2 = y2*scale;
+        // input['point_coords'] = new ort.Tensor("float32", new Float32Array([x1,y1,x2,y2]), [1, 2, 2]);
+
         input['point_coords'] = new ort.Tensor("float32", new Float32Array([x1,y1,x2,y2]), [1, 2, 2]);
+
 
         // 2 and 3 mean top-left-bottom-right box
         input['point_labels'] = new ort.Tensor("float32", new Float32Array([2,3]), [1, 2]);
