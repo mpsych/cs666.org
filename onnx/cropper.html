@@ -26,23 +26,21 @@
         height = image.height;
 
         cropbox = new Croppr('#i1', {
+
+          startSize: [60, 247],
+          onCropEnd: setup
+
         });
 
-      };
-
-      window.onkeypress = function(e) {
-
-        e.preventDefault();
-
-        if (e.code != 'Space') return;
-
-        setup();
+        // select random guy
+        cropbox.moveTo(593, 106);
+        // cropbox.resizeTo(83, 217);
 
       };
 
-      async function setup() {
+      async function setup(data) {
 
-        data = cropbox.getValue();
+        // data = cropbox.getValue();
 
         x1 = data.x;
         y1 = data.y;
