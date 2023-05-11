@@ -1,8 +1,13 @@
 https://viewer.imaging.datacommons.cancer.gov/viewer/1.3.6.1.4.1.14519.5.2.1.177771772342313796313139165433764388011
 
 element = cornerstone.getEnabledElements()[0];
+canvas = element.canvas;
 
-base64 = element.canvas.toDataURL('image/png')
+
+canvas = nv1.canvas;
+
+
+base64 = canvas.toDataURL('image/png')
 base64 = base64.replace("data:image/png;base64,","")
 uint8arr = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
@@ -18,23 +23,34 @@ script.src = "https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"
 document.head.appendChild(script)
 eval(script)
 
+
+
+
 // START SAM SESSION
 session = await ort.InferenceSession.create('https://cs666.org/onnx/sam.onnx');
 
 
 
-image=element.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+image=canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
 window.location.href=image; // it will save locally
 
 
 
 const RectangleRoiTool = cornerstoneTools.RectangleRoiTool;
 cornerstoneTools.addTool(RectangleRoiTool)
-cornerstoneTools.setToolEnabled('RectangleRoi', { mouseButtonMask: 1 })
+cornerstoneTools.setToolActive('RectangleRoi', { mouseButtonMask: 1 })
 
 
 
 element.canvas.onmouseup = function(e) {console.log('test',e);}
+
+var RectangleScissorsTool = cornerstoneTools.RectangleScissorsTool;
+
+cornerstoneTools.addS
+
+
+cornerstoneTools.addToolState(element.element, "RectangleScissors")
+
 
 var RectangleScissorsTool = cornerstoneTools.RectangleScissorsTool;
 cornerstoneTools.addTool(RectangleScissorsTool)
@@ -46,3 +62,22 @@ cornerstone.getEnabledElementsByImageId(element.image.imageId)
 
 
 cornerstone.renderGrayscaleImage(element, true)
+
+
+cornerstoneTools.store.state.
+
+element.element
+
+
+
+
+element = cornerstone.getEnabledElements()[0];
+cornerstoneTools.setToolActive('RectangleRoi', { mouseButtonMask: 1 })
+cornerstoneTools.globalImageIdSpecificToolStateManager.saveToolState()
+
+
+
+cornerstone.pixelToCanvas(element.element, {'x':0,'y':0})
+
+
+https://github.com/cornerstonejs/cornerstoneTools/blob/master/netlify-example/brush/index.html

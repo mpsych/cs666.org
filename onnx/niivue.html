@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>NiiVue!</title>
+    <style>
+      body { 
+        background-color:#000;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden !important;  
+      }
+    </style>
+    <script type="text/javascript" src="https://niivue.github.io/niivue/features/niivue.umd.js"></script>
+    <script type="text/javascript">
+      window.onload = function() {
+
+        nv1 = new niivue.Niivue()
+        nv1.attachTo('gl1')
+        nv1.setSliceType(nv1.sliceTypeCoronal)
+
+      };
+
+      function grabimage() {
+
+        nvtextHeight : 0.02,
+        nv1.setCrosshairColor([0, 0, 0, 0]);
+        nv1.opts.crosshairWidth = 0.0;
+        nv1.opts.show3Dcrosshair = false;
+
+        nv1.updateGLVolume();
+
+      }
+
+    </script>
+  </head>
+  <body>
+    <canvas id='gl1' style='height:100%;width:100%'></canvas>
+  </body>
+</html>
