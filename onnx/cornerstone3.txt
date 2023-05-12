@@ -1,4 +1,10 @@
-
+//
+// VISIT DANIELHAEHN.COM !
+//
+// Thanks to Alireza Seghi and Kevin Wang for all the help!
+//
+//
+//
 
 // GET EMBEDDING FOR CANVAS
 element = cornerstone.getEnabledElements()[0];
@@ -25,6 +31,10 @@ xhr.onreadystatechange = function () {
     script.src = "https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"
     document.head.appendChild(script)
     eval(script)
+
+
+  // ENABLE ROI INTERACTION
+  cornerstoneTools.setToolActive('RectangleRoi', { mouseButtonMask: 1 })
 
 
   }
@@ -124,8 +134,6 @@ canvas.onmouseup = function(e) {
 
 }
 
-// ENABLE ROI INTERACTION
-cornerstoneTools.setToolActive('RectangleRoi', { mouseButtonMask: 1 })
 
 
 
