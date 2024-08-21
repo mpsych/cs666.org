@@ -1,0 +1,1 @@
+{"PatientID": "DH9000AVB66C", "View": "cranio-caudal", "WindowCenter": [2755.0, 2791.0, 2701.0], "WindowWidth": [900.0, 750.0, 1050.0], "WindowCenterWidthExplanation": ["NORMAL", "HARDER", "SOFTER"], "ImagerPixelSpacing": [0.09409090909091, 0.09409090909091], "ImageLaterality": "L", "coords": [561.0, 971.0, 669.0, 1091.0], "score": 0.8405675888061523, "label": "IndexCancer"}
